@@ -2,50 +2,49 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"path/filepath"
 
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 )
 
 func main() {
 
-	// Create a Kubernetes client
-	clientset, err := getKubernetesClient()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// For now, let's just print out the clientset to ensure the connection is working
-	fmt.Println("Successfully created Kubernetes client:", clientset)
-}
-
-// getKubernetesClient initializes a client for interacting with the Kubernetes API
-func getKubernetesClient() (*kubernetes.Clientset, error) {
 	var kubeconfig string
 
-	// Check if we're running inside a Kubernetes cluster or outside of it
+	// Locate kubeconfig file (default location is ~/.kube/config)
 	if home := homedir.HomeDir(); home != "" {
 		kubeconfig = filepath.Join(home, ".kube", "config")
 	}
 
-	// Build configuration from within the cluster
-	config, err := rest.InClusterConfig()
+	// Build configuration from kubeconfig file
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
-		// If we're outside the cluster, use the local kubeconfig file
-		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
-		if err != nil {
-			return nil, err
-		}
+		log.Fatalf("Error building kubeconfig: %v", err)
 	}
 
-	// Error handling
+	// Create Kubernetes client
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		return nil, err
+		log.Fatalf("Error creating Kubernetes client: %v", err)
 	}
 
-	return clientset, nil
+	fmt.Println("Application started successfully")
+	fmt.Println("Successfully created Kubernetes client")
+
+	// Fetch and print nodes
+	nodes, err := FetchNodes(clientset)
+	if err != nil {
+		log.Fatalf("Error fetching nodes: %s", err.Error())
+	}
+	PrintNodes(nodes)
+
+	// Fetch and print pods from the default namespace
+	pods, err := FetchPods(clientset, "default")
+	if err != nil {
+		log.Fatalf("Error fetching pods: %s", err.Error())
+	}
+	PrintPods(pods)
 }
