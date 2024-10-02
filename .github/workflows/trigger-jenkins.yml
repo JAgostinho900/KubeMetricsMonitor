@@ -1,9 +1,9 @@
-name: Trigger Jenkins Build
+name: Trigger Jenkins Build on PR
 
+# This triggers the action on pull requests
 on:
-  push:
-    branches:
-      types: [opened, synchronize, reopened]  # This triggers on PR creation, updates, or reopening
+  pull_request:
+    types: [opened, synchronize, reopened]  # Events that trigger the action
 
 jobs:
   trigger-jenkins:
