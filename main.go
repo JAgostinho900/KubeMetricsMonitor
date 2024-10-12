@@ -3,29 +3,26 @@ package main
 import (
 	"fmt"
 	"log"
-	"path/filepath"
+	"net/http"
 
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
+	"k8s.io/client-go/rest"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
 
-	var kubeconfig string
+	// Start the metrics endpoint
+	http.Handle("/metrics", promhttp.Handler())
 
-	// Locate kubeconfig file (default location is ~/.kube/config)
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	}
-
-	// Build configuration from kubeconfig file
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	// Use in-cluster configuration instead of kubeconfig
+	config, err := rest.InClusterConfig()
 	if err != nil {
-		log.Fatalf("Error building kubeconfig: %v", err)
+		log.Fatalf("Error building in-cluster config: %v", err)
 	}
 
-	// Create Kubernetes client
+	// Create Kubernetes client using in-cluster config
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		log.Fatalf("Error creating Kubernetes client: %v", err)
@@ -47,4 +44,8 @@ func main() {
 		log.Fatalf("Error fetching pods: %s", err.Error())
 	}
 	PrintPods(pods)
+
+	// Start the HTTP server
+	fmt.Println("Starting server on :8080")
+	http.ListenAndServe(":8080", nil)
 }
