@@ -10,6 +10,9 @@ COPY go.mod go.sum ./
 # Download the Go module dependencies
 RUN go mod download
 
+# Install GoLint
+RUN go install golang.org/x/lint/golint@latest
+
 # Copy the source code into the container
 COPY . .
 
