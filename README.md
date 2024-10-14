@@ -9,7 +9,6 @@ KubeMetricsMonitor is a Go-based microservice that scrapes and exposes Kubernete
 - Containerized using Docker for portability
 - Deployed and managed on Kubernetes clusters
 - Integrated with Prometheus for monitoring and Grafana for visualization
-- Infrastructure as Code (IaC) provisioning with Terraform
 - Continuous Integration and Continuous Deployment (CI/CD) pipelines for automated testing and deployment
 
 ## Technology Stack
@@ -19,7 +18,6 @@ KubeMetricsMonitor is a Go-based microservice that scrapes and exposes Kubernete
 - **Prometheus**: Metrics scraping and alerting
 - **Grafana**: Visualizing metrics
 - **Docker**: Containerization of the microservice
-- **Terraform**: Infrastructure as Code for cloud resources
 - **CI/CD**: Automated deployment pipeline using GitHub Actions (or Jenkins)
 
 ## Architecture
