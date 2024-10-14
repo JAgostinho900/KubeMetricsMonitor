@@ -14,22 +14,18 @@ echo "Adding Prometheus community Helm repo..."
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 
+# Add the Grafana Helm repo (needs to be added before we install Grafana)
+echo "Adding Grafana Helm repo..."
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+
 # Install Prometheus using Helm
 echo "Installing Prometheus..."
-helm install prometheus prometheus-community/prometheus --namespace default
+helm install prometheus prometheus-community/prometheus --namespace default --create-namespace
 
 # Wait for Prometheus pods to be ready
 echo "Waiting for Prometheus to be ready..."
 kubectl wait --for=condition=ready pod -l app=prometheus-server --namespace default --timeout=300s
-
-# Port-forward Prometheus to access it locally
-echo "Port-forwarding Prometheus to localhost:9090..."
-kubectl port-forward svc/prometheus-server 9090:9090 &
-
-# Add the Grafana Helm repo
-echo "Adding Grafana Helm repo..."
-helm repo add grafana https://grafana.github.io/helm-charts
-helm repo update
 
 # Install Grafana using Helm
 echo "Installing Grafana..."
@@ -38,16 +34,3 @@ helm install grafana grafana/grafana --namespace default --set adminPassword=adm
 # Wait for Grafana pods to be ready
 echo "Waiting for Grafana to be ready..."
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=grafana --namespace default --timeout=300s
-
-# Port-forward Grafana to access it locally
-echo "Port-forwarding Grafana to localhost:3000..."
-kubectl port-forward svc/grafana 3000:3000 &
-
-# Get the Grafana admin password
-echo "Grafana admin password: admin"
-echo "Access Grafana at http://localhost:3000"
-
-# Final instruction message
-echo "Prometheus is running at http://localhost:9090"
-echo "Grafana is running at http://localhost:3000"
-echo "You can log in to Grafana with username 'admin' and the password 'admin'"
