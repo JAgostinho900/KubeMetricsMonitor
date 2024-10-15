@@ -1,75 +1,63 @@
 # KubeMetricsMonitor
 
-KubeMetricsMonitor is a Go-based microservice that scrapes and exposes Kubernetes cluster metrics via an HTTP API. It is designed for cloud-native environments and integrates seamlessly with tools like Prometheus and Grafana for real-time monitoring and visualization.
+KubeMetricsMonitor is a Go-based microservice designed to scrape and expose Kubernetes cluster metrics via an HTTP API. This microservice is optimized for cloud-native environments and integrates seamlessly with monitoring tools like **Prometheus** and **Grafana** to provide real-time metrics and visualizations.
 
 ## Features
 
-- Scrapes Kubernetes cluster metrics (nodes, pods, CPU, memory usage)
-- Exposes metrics through an HTTP REST API
-- Containerized using Docker for portability
-- Deployed and managed on Kubernetes clusters
-- Integrated with Prometheus for monitoring and Grafana for visualization
-- Continuous Integration and Continuous Deployment (CI/CD) pipelines for automated testing and deployment
+- Scrapes Kubernetes cluster metrics such as nodes, pods, CPU, and memory usage.
+- Exposes these metrics through an HTTP REST API for easy consumption.
+- Fully containerized with Docker for portability across environments.
+- Deployed and managed within Kubernetes clusters for scalability.
+- Integrated with Prometheus for monitoring and Grafana for visualization.
+- Supports a robust CI pipeline using Jenkins for automated testing and building (currently running locally).
 
 ## Technology Stack
 
-- **Go**: Backend microservice
-- **Kubernetes**: Orchestrating and deploying the microservice
-- **Prometheus**: Metrics scraping and alerting
-- **Grafana**: Visualizing metrics
-- **Docker**: Containerization of the microservice
-- **CI/CD**: Automated deployment pipeline using GitHub Actions (or Jenkins)
+- **Go**: Backend microservice that interacts with the Kubernetes API.
+- **Kubernetes**: Manages and orchestrates the deployment of the microservice.
+- **Prometheus**: Scrapes metrics from the microservice and handles alerting.
+- **Grafana**: Visualizes metrics with customizable dashboards.
+- **Docker**: Ensures the service is easily portable across different environments.
+- **Jenkins**: Automates the build pipeline (locally) and ensures continuous integration.
 
 ## Architecture
 
-The microservice uses the Kubernetes API to gather real-time metrics such as CPU usage, memory utilization, pod status, and node health. It exposes this data via an HTTP endpoint, making it easy to integrate into monitoring systems like Prometheus. The service can be containerized and deployed in a Kubernetes cluster for production-ready scalability.
+The service interacts with the Kubernetes API to gather real-time metrics, including resource usage (CPU and memory), pod statuses, and node health. These metrics are exposed via an HTTP endpoint (`/metrics`), making them easily accessible to monitoring tools such as Prometheus. The system is fully containerized, designed for seamless deployment in Kubernetes clusters, and supports horizontal scaling for production use.
 
-### Prerequisites
+## Key Features
 
-- Go
-- Docker
-- Kubernetes
-- Prometheus
-- Grafana
+- **Kubernetes API Integration**: The microservice fetches critical cluster information, enabling comprehensive monitoring.
+- **HTTP API**: Metrics are made available through an accessible HTTP endpoint.
+- **Dockerized Deployment**: The microservice is containerized, ensuring compatibility across environments.
+- **Prometheus Integration**: Out-of-the-box support for Prometheus to scrape metrics.
+- **Grafana Dashboards**: Visualize cluster health, resource utilization, and performance through Grafana.
+- **Jenkins CI**: Local Jenkins setup provides a continuous integration pipeline to build and test the application.
 
-### Installation
+## Deployment and Setup
 
-1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-username/kube-metrics-monitor.git
-    cd kube-metrics-monitor
-    ```
+### 1. Build the Docker Image
+Use the following commands to build the Docker image of the Go application.
 
-2. **Build the Go microservice**:
-    ```bash
-    go build -o kube-metrics-monitor main.go
-    ```
+### 2. Deploy the Application to Kubernetes
+Apply the Kubernetes deployment YAML file to deploy the application to your Kubernetes cluster.
 
-3. **Run the microservice** locally:
-    ```bash
-    ./kube-metrics-monitor
-    ```
+### 3. Apply Kubernetes Permissions (ClusterRole and ClusterRoleBinding)
+To allow the application to list nodes and pods, apply the necessary ClusterRole and ClusterRoleBinding YAML files.
 
-4. **Run in Docker**:
-    ```bash
-    docker build -t your-username/kube-metrics-monitor .
-    docker run -p 8080:8080 your-username/kube-metrics-monitor
-    ```
+### 4. Install and Run Prometheus and Grafana
+Install Prometheus and Grafana using Helm, then port-forward to make them accessible locally.
 
-5. **Deploy to Kubernetes**:
-    - Apply the Kubernetes YAML manifests for the deployment and service.
+### 5. Verifying the Application
+Once the setup is complete, access Prometheus and Grafana locally and ensure they are running properly.
 
-6. **Integrate with Prometheus and Grafana**:
-    - Configure Prometheus to scrape the microservice API for metrics.
-    - Set up Grafana dashboards to visualize the data.
+## Jenkins CI Pipeline (Local)
 
-## Usage
+At the moment, Jenkins is set up locally to automate the continuous integration pipeline. It builds and tests the application. The pipeline works locally, but the Jenkins server will be migrated to a cloud environment later.
 
-Once the service is running, it will expose metrics on an HTTP API:
+You will need to manually trigger the Jenkins builds from the Jenkins UI until further automation steps are implemented.
 
-- **/metrics**: Returns Kubernetes cluster metrics (e.g., CPU, memory, pod statuses).
+## Future Enhancements
 
-### Example:
-
-```bash
-curl http://localhost:8080/metrics
+- **Jenkins on AWS**: Transitioning the Jenkins server to run on an AWS EC2 instance for production-grade CI/CD pipelines.
+- **Advanced Monitoring**: Adding custom metrics and fine-tuning Grafana dashboards for detailed performance insights.
+- **GitHub Actions**: Implementing GitHub Actions to trigger Jenkins builds on pull requests for improved CI automation (planned for future phases).
